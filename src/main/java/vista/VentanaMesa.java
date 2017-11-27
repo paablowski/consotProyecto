@@ -4,6 +4,7 @@ package vista;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -16,6 +17,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -35,21 +37,21 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
-import modelo.Producto;
 
 /**
  *
  * @author pasot
  */
+
 public class VentanaMesa extends JFrame{
     
-    private JPanel panelMesaIzq;
+    private final JPanel panelMesaIzq;
     private JPanel panelMesaCentro;
-    private JPanel panelMesaDer; 
+    private final JPanel panelMesaDer; 
     private VentanaAgregar ventanaAgregar;
     private VentanaPagar ventanaPagar;
-    private JButton btnAgregar;
-    private JButton btnCancelar;
+    private final JButton btnAgregar;
+    private final JButton btnCancelar;
     public JList mesasJList;
     public DefaultListModel modelo;
     public JMenuItem i1;
@@ -62,31 +64,41 @@ public class VentanaMesa extends JFrame{
     private String[] nombreColumnas = new String[]{"CODIGO","NOMBRE","CANTIDAD","PRECIO"};
     int total = 0;
     private JScrollPane scroll;
-    private JLabel totaltxt;
-    private JLabel subtotaltxt;
+    private final JLabel totaltxt;
+    private final JLabel subtotaltxt;
     private JCheckBox incluirPropina;
-    private JLabel totalLabel;
-    private JLabel propinaLabel;
+    private final JLabel totalLabel;
+    private final JLabel propinaLabel;
     private JLabel subtotalLabel;
+    private BufferedWriter bw;
     
     public VentanaMesa(){
+        try {
+            setIconImage(ImageIO.read(new File("res/Pizza-icon.png")));
+        } catch (Exception e) {
+        }
         
         JMenu menu, submenu;
-        JMenuItem i1, i2, i3, i4, i5;
+        JMenuItem itemInventario, itemSalir, i3, i4, i5;
         JMenuBar menuBar = new JMenuBar();
         menu = new JMenu("Archivo");
         submenu = new JMenu("Submenu");
-        i1=new JMenuItem("Inventario");  
-        i2=new JMenuItem("Salir"); 
-        menu.add(i1);
-        menu.add(i2); 
+        itemInventario = new JMenuItem("Inventario");  
+        itemSalir = new JMenuItem("Salir"); 
+        menu.add(itemInventario);
+        menu.add(itemSalir); 
         menuBar.add(menu);  
         this.setJMenuBar(menuBar);
         
-        i1.addActionListener(
+        itemInventario.addActionListener(
                 (ActionEvent e) -> {
                     VentanaInventario ventanaInventario = new VentanaInventario();
                     ventanaInventario.setVisible(true);
+                }
+        );
+        itemSalir.addActionListener(
+                (ActionEvent e) -> {
+                    System.exit(0);
                 }
         );
 
@@ -114,9 +126,27 @@ public class VentanaMesa extends JFrame{
             int index = theList.locationToIndex(mouseEvent.getPoint())+1;
             if (index >= 0) {
                 
+                String RUTA_MESA = "data\\mesa"+index+".txt";
+                try {
+                    
+                    File archivo = new File(RUTA_MESA);
+
+                    if(!archivo.exists()) {
+                        bw = new BufferedWriter(new FileWriter(archivo));
+                        
+                    } else {
+                        
+                        
+                    }
+                bw.close();
+                } catch (Exception e) {
+                }
+                
+                
+                
                 bordePanelCentro.setTitle("Mesa "+index);
                 panelMesaCentro.setBorder(bordePanelCentro);
-                String RUTA_MESA = "data\\mesa"+index+".txt";
+                
 
                 try {
 
@@ -168,6 +198,9 @@ public class VentanaMesa extends JFrame{
         panelMesaCentro.setPreferredSize(new Dimension(480, 400));
         bordePanelCentro.setTitleColor( Color.BLUE );
         panelMesaCentro.setBorder(bordePanelCentro);
+        JLabel mensajeInicio = new JLabel("Bienvenido, selecciona una mesa");
+        mensajeInicio.setFont( new Font( "Helvetica", Font.BOLD, 18 ) );
+        panelMesaCentro.add(mensajeInicio);
        
 /*PANEL DERECHO*/
         panelMesaDer = new JPanel();
@@ -191,15 +224,6 @@ public class VentanaMesa extends JFrame{
         totalPagarPanel.setPreferredSize(new Dimension(180,10));
         panelMesaDer.add(totalPagarPanel);
         totalPagarPanel.setBorder(borde);
-        
-        
-        
-        
-        
-        
-        
-        
-        
         
         btnAgregar.addActionListener(
                 (ActionEvent e) -> {
@@ -232,8 +256,6 @@ public class VentanaMesa extends JFrame{
         totalLabel = new JLabel("$ "+total);
         propinaLabel = new JLabel("+ $"+propinaSugerida);
         subtotalLabel = new JLabel("$ "+total);
-        
-        
         
         totalPagarPanel.add(totaltxt);
         totalPagarPanel.add(totalLabel);
@@ -269,8 +291,6 @@ public class VentanaMesa extends JFrame{
         propinaSugerida = (int) (0.1*(double) total);
         subTotal = total + propinaSugerida;
         
-        System.out.println("Total: $"+total);
-        System.out.println("Propina: $"+propinaSugerida);
         totalLabel.setText("$ "+total);
         propinaLabel.setText("+ $"+propinaSugerida);
         subtotalLabel.setText("$ "+total);

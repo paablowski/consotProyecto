@@ -14,9 +14,10 @@ public class Restaurante {
 //        
 //        ControladorPedido controlador = new ControladorPedido(manejo,vM);
 //        controlador.iniciarVista();
-        
+       
        VentanaMesa ventanaMesa = new VentanaMesa();
        ventanaMesa.setVisible(true);
+       
         
 
     }

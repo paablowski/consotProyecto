@@ -1,2 +1,3 @@
-1,Completo italiano,2,1600
-0,Pizza napolitana,3,5000
+2,Bebida,5,500
+4,Papas fritas,35,990,
+3,Churrasco,5,5000,
