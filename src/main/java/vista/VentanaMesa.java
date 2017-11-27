@@ -61,6 +61,7 @@ public class VentanaMesa extends JFrame{
     private JTableHeader header;
     private String[] nombreColumnas = new String[]{"CODIGO","NOMBRE","CANTIDAD","PRECIO"};
     int total = 0;
+    private JScrollPane scroll;
     private JLabel totaltxt;
     private JLabel subtotaltxt;
     private JCheckBox incluirPropina;
