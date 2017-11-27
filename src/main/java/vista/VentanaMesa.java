@@ -53,13 +53,9 @@ public class VentanaMesa extends JFrame{
     public JList mesasJList;
     public DefaultListModel modelo;
     public JMenuItem i1;
-    private JLabel mesa;
     private JTable tabla;
     private TitledBorder bordePanelCentro;
     private BufferedReader bufferedReader;
-    private String RUTA_MESA;
-    private JScrollPane scroll;
-    private File ARCHIVO;
     int propinaSugerida = 0;
     int subTotal; 
     private JTableHeader header;
@@ -120,7 +116,6 @@ public class VentanaMesa extends JFrame{
                 bordePanelCentro.setTitle("Mesa "+index);
                 panelMesaCentro.setBorder(bordePanelCentro);
                 String RUTA_MESA = "data\\mesa"+index+".txt";
-                
 
                 try {
 
