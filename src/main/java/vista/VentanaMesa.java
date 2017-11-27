@@ -10,7 +10,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BorderFactory;
@@ -31,6 +34,7 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import modelo.Producto;
 
 /**
@@ -54,8 +58,19 @@ public class VentanaMesa extends JFrame{
     private TitledBorder bordePanelCentro;
     private BufferedReader bufferedReader;
     private String RUTA_MESA;
+    private JScrollPane scroll;
+    private File ARCHIVO;
+    int propinaSugerida = 0;
+    int subTotal; 
+    private JTableHeader header;
     private String[] nombreColumnas = new String[]{"CODIGO","NOMBRE","CANTIDAD","PRECIO"};
     int total = 0;
+    private JLabel totaltxt;
+    private JLabel subtotaltxt;
+    private JCheckBox incluirPropina;
+    private JLabel totalLabel;
+    private JLabel propinaLabel;
+    private JLabel subtotalLabel;
     
     public VentanaMesa(){
         
@@ -96,45 +111,54 @@ public class VentanaMesa extends JFrame{
         MouseListener mouseListener = new MouseAdapter() {
         @Override
         public void mouseClicked(MouseEvent mouseEvent) {
+            incluirPropina.setSelected(false);
           JList theList = (JList) mouseEvent.getSource();
           if (mouseEvent.getClickCount() == 1) {
             int index = theList.locationToIndex(mouseEvent.getPoint())+1;
             if (index >= 0) {
                 
-            bordePanelCentro.setTitle("Mesa "+index);
-            panelMesaCentro.setBorder(bordePanelCentro);
-            String RUTA_MESA = "data\\mesa"+index+".txt";
-            System.out.println("Ruta: "+RUTA_MESA);
+                bordePanelCentro.setTitle("Mesa "+index);
+                panelMesaCentro.setBorder(bordePanelCentro);
+                String RUTA_MESA = "data\\mesa"+index+".txt";
                 
-            try {
-            
-            bufferedReader = new BufferedReader(new FileReader("data\\mesa"+index+".txt"));
-            List<String[]> elements = new ArrayList<>();
-            String linea;
-            while ((linea = bufferedReader.readLine()) != null) {
-                String [] quitarComa = linea.split(",");
-                elements.add(quitarComa);
-            }
-            bufferedReader.close();
-            tabla = new JTable();
-            JScrollPane scroll = new JScrollPane(tabla);
-            
-            panelMesaCentro.add(tabla.getTableHeader(),BorderLayout.PAGE_START);
-            panelMesaCentro.add(tabla,BorderLayout.CENTER);
-            
-            Object[][] contenido = new Object[elements.size()][4];
-            for (int i = 0; i < elements.size(); i++) {
-                contenido[i][0]= elements.get(i)[0];
-                contenido[i][1]= elements.get(i)[1];
-                contenido[i][2]= elements.get(i)[2];
-                contenido[i][3]= "$"+elements.get(i)[3];
-            }
-            tabla.setModel(new DefaultTableModel(contenido,nombreColumnas));
-            
-        } catch (Exception e) {
-        }
-       
-        panelMesaCentro.add(new JScrollPane(tabla));
+
+                try {
+
+                tabla = new JTable();
+                panelMesaCentro.removeAll();  
+                bufferedReader = new BufferedReader(new FileReader(RUTA_MESA));
+
+
+                List<String[]> elements = new ArrayList<>();
+                String linea;
+                while ((linea = bufferedReader.readLine()) != null) {
+                    String [] quitarComa = linea.split(",");
+                    elements.add(quitarComa);
+                }
+                bufferedReader.close();
+                
+                scroll = new JScrollPane(tabla);
+                header = tabla.getTableHeader();
+                
+                panelMesaCentro.add(header,BorderLayout.PAGE_START);
+                panelMesaCentro.add(tabla,BorderLayout.CENTER);
+                
+                Object[][] contenido = new Object[elements.size()][4];
+                for (int i = 0; i < elements.size(); i++) {
+                    contenido[i][0]= elements.get(i)[0];
+                    contenido[i][1]= elements.get(i)[1];
+                    contenido[i][2]= elements.get(i)[2];
+                    contenido[i][3]= elements.get(i)[3];
+                }
+                
+                tabla.setModel(new DefaultTableModel(contenido,nombreColumnas));
+
+                calcularTotal(contenido);
+
+                } catch (Exception e) {
+                }
+
+                panelMesaCentro.add(new JScrollPane(tabla));
 
                 }
               }
@@ -145,53 +169,20 @@ public class VentanaMesa extends JFrame{
         
 /*PANEL CENTRO*/        
         panelMesaCentro = new JPanel();
-        
+        panelMesaCentro.setPreferredSize(new Dimension(480, 400));
         bordePanelCentro.setTitleColor( Color.BLUE );
         panelMesaCentro.setBorder(bordePanelCentro);
-        
-        try {
-            bufferedReader = new BufferedReader(new FileReader("data\\mesa1.txt"));
-            List<String[]> elements = new ArrayList<>();
-            String linea;
-            while ((linea = bufferedReader.readLine()) != null) {
-                String [] quitarComa = linea.split(",");
-                elements.add(quitarComa);
-            }
-            bufferedReader.close();
-            tabla = new JTable();
-            JScrollPane scroll = new JScrollPane(tabla);
-            
-            panelMesaCentro.add(tabla.getTableHeader(),BorderLayout.PAGE_START);
-            panelMesaCentro.add(tabla,BorderLayout.CENTER);
-            
-            Object[][] contenido = new Object[elements.size()][4];
-            for (int i = 0; i < elements.size(); i++) {
-                contenido[i][0]= elements.get(i)[0];
-                contenido[i][1]= elements.get(i)[1];
-                contenido[i][2]= elements.get(i)[2];
-                contenido[i][3]= elements.get(i)[3];
-            }
-            tabla.setModel(new DefaultTableModel(contenido,nombreColumnas));
-            
-        } catch (Exception e) {
-        }
        
-        panelMesaCentro.add(new JScrollPane(tabla));
-        
 /*PANEL DERECHO*/
         panelMesaDer = new JPanel();
         panelMesaDer.setLayout(new GridLayout(3, 1));
         
-        
-
         setLayout(new GridLayout(3, 1));
         JPanel botones = new JPanel();
         botones.setLayout(new GridLayout(2, 1));
         btnAgregar = new JButton("Agregar");
         btnCancelar = new JButton("Cancelar");
         botones.add(btnAgregar);
-        
-        
         
         
         botones.add(btnCancelar);
@@ -209,32 +200,10 @@ public class VentanaMesa extends JFrame{
         
         
         
-        int propinaSugerida = 0;
-        int subTotal; 
         
-        for (int i = 0; i < tabla.getRowCount(); i++) {
-            int fila = Integer.parseInt(tabla.getValueAt(i, 3).toString());
-            
-            total += fila;
-        }
         
-        propinaSugerida = (int) (0.1*(double) total);
-        subTotal = total + propinaSugerida;
-        JLabel totaltxt = new JLabel("Total: ");
-        JLabel subtotaltxt = new JLabel("Subtotal: ");
-        JCheckBox incluirPropina = new JCheckBox("Propina?",false);
-        JLabel totalLabel = new JLabel("$ "+total);
-        JLabel propinaLabel = new JLabel("+ $"+propinaSugerida);
-        JLabel subtotalLabel = new JLabel("$ "+total);
-        incluirPropina.addActionListener(
-                (ActionEvent e) -> {
-                    if (!incluirPropina.isSelected()) {
-                        subtotalLabel.setText("$ "+total);
-                    }else{
-                        subtotalLabel.setText("$ "+subTotal);
-                    }
-                }
-        );
+        
+        
         
         btnAgregar.addActionListener(
                 (ActionEvent e) -> {
@@ -251,6 +220,24 @@ public class VentanaMesa extends JFrame{
                     
                 }
         );
+        totaltxt = new JLabel("Total: ");
+        subtotaltxt = new JLabel("Subtotal: ");
+        incluirPropina = new JCheckBox("Propina?",false);
+        
+        incluirPropina.addActionListener(
+                (ActionEvent e) -> {
+                    if (!incluirPropina.isSelected()) {
+                        subtotalLabel.setText("$ "+total);
+                    }else{
+                        subtotalLabel.setText("$ "+subTotal);
+                    }
+                }
+        );
+        totalLabel = new JLabel("$ "+total);
+        propinaLabel = new JLabel("+ $"+propinaSugerida);
+        subtotalLabel = new JLabel("$ "+total);
+        
+        
         
         totalPagarPanel.add(totaltxt);
         totalPagarPanel.add(totalLabel);
@@ -273,6 +260,28 @@ public class VentanaMesa extends JFrame{
     
     }
     
-    
+    public void calcularTotal(Object[][] contenido){
+        total=0;
+        for (int i = 0; i < contenido.length; i++) {
+            int precio = Integer.parseInt(tabla.getValueAt(i, 3).toString());
+            int cantidad = Integer.parseInt(tabla.getValueAt(i, 2).toString());
+            
+            total += precio*cantidad;
+            
+            }
+        
+        propinaSugerida = (int) (0.1*(double) total);
+        subTotal = total + propinaSugerida;
+        
+        System.out.println("Total: $"+total);
+        System.out.println("Propina: $"+propinaSugerida);
+        totalLabel.setText("$ "+total);
+        propinaLabel.setText("+ $"+propinaSugerida);
+        subtotalLabel.setText("$ "+total);
+                
+        
+        
+    }
+
 }
     
