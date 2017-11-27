@@ -50,14 +50,14 @@ public class VentanaAgregar extends JFrame{
         
         
         
-        panelAgregarIzq.setPreferredSize(new Dimension(250, 200));
-        panelAgregarIzq.setMinimumSize(new Dimension(300, 500));
+        //panelAgregarIzq.setPreferredSize(new Dimension(250, 500));
+        panelAgregarIzq.setMinimumSize(new Dimension(300, 100));
         
         
-        panelAgregarCentro.setMinimumSize(new Dimension(110, 500));
+        panelAgregarCentro.setMinimumSize(new Dimension(110, 100));
         
-        panelAgregarDer.setPreferredSize(new Dimension(250, 200));
-        panelAgregarDer.setMinimumSize(new Dimension(300, 500));
+        //panelAgregarDer.setPreferredSize(new Dimension(250, 500));
+        panelAgregarDer.setMinimumSize(new Dimension(300, 100));
         
         
 /*PANEL IZQUIERDO*/
@@ -163,7 +163,7 @@ System.out.println(" Value in the cell clicked :"+ " " +tabla.getValueAt(row,col
 
         add(pane2);
         
-        this.setSize(750, 400);
+        this.setSize(750, 500);
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         
         

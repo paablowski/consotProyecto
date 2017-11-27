@@ -1,5 +1,5 @@
 0,Pizza napolitana,21,5000
 1,Completo italiano,16,1600
 2,Bebida,20,500
-3,abcs,50,5000,
-4,gatos,60,990,
+3,Churrasco,50,5000,
+4,Papas fritas,60,990,
